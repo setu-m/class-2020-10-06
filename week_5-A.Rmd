@@ -13,6 +13,33 @@ library(tidyverse)
 
 **Prompt:** Create a graphic of the posterior distribution of the [538 forecast](https://projects.fivethirtyeight.com/2020-election-forecast/) for Biden's electoral vote total. Recall the example given in Chapter 3 of *The Primer*.
 
+```{r}
+
+
+pres <- read_csv("data_538/election-forecasts-2020/presidential_ev_probabilities_2020.csv", col_type = cols(
+  cycle = col_double(),
+  branch = col_character(),
+  model = col_character(),
+  modeldate = col_character(),
+  candidate_inc = col_character(),
+  candidate_chal = col_character(),
+  candidate_3rd = col_character(),
+  evprob_inc = col_double(),
+  evprob_chal = col_double(),
+  evprob_3rd = col_double(),
+  total_ev = col_double(),
+  timestamp = col_character(),
+  simulations = col_double()
+))
+
+
+  
+ggplot(pres, aes(total_ev, evprob_chal)) +
+  geom_col()
+
+
+
+```
 
 
 ### Scene 2
@@ -20,6 +47,7 @@ library(tidyverse)
 **Prompt:** The purpose of this question and the next is to make sure you understand the Rubin Causal Model. Use a Google sheet, or a spreadsheet of your choice, to create the necessary tables. Most will just require a couple of lines. Wisconsin has 10 electoral votes.
 
 a) Create an ideal Preceptor Table which examines the causal effect of a proposed advertising campaign on Biden's electoral votes from Wisconsin. 
+
 
 b) Assume that Biden implements the campaign, create the actual Preceptor Table which we will see after the election.
 
@@ -34,10 +62,31 @@ c) What does the actual Preceptor Table look like now?
 
 
 a) What is the probability that Biden wins more than 300 electoral votes?
+```{r}
+pres %>%
+  filter(total_ev > 300) %>%
+  summarise(prob = sum(evprob_chal))
+  
+```
+
 
 b) What is the probability that Biden wins exactly 531 electoral votes? Is this answer consistent with your answer in a)?
 
+```{r}
+pres %>%
+  filter(total_ev == 531) %>%
+  summarise(prob = sum(evprob_chal))
+```
+
+
 c) What is the probability of a "very close" election, defined as Biden winning between 269 and 289 electoral votes, inclusive?
+
+```{r}
+pres %>%
+  filter(total_ev >= 269 & total_ev <=289) %>%
+  summarise(prob = sum(evprob_chal))
+```
+
 
 d) How many unique electoral vote totals does 538 view as impossible for Biden to achieve? Some of these are truly impossible. Given an example of one of these. Why does 538 think that some vote totals, while theoretically possible, should be given zero probability in its posterior?
 
